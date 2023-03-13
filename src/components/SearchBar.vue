@@ -13,23 +13,19 @@ export default {
         }
     },
     
-    setup(props) {
-    const searchValue = ref('');
-
-    const handleSubmit = () => {
-        router.push('/');
-        props.onSubmit(searchValue.value);
-        searchValue.value = ''; // clear input field
-    };
-
-    return {
-      searchValue,
-      handleSubmit
-    };
-  }
-
+    data() {
+        return {
+            searchValue: ref('')
+        }
+    },
+    methods: {
+        handleSubmit() {
+            router.push('/');
+        this.onSubmit(this.searchValue);
+        this.searchValue = ''; // clear input field
+        }
+    }
 }
-
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 <script  lang="ts">
-import { onMounted } from 'vue';
 import MovieCard2 from '@/components/MovieCard2.vue';
 import ThePaginator from '../components/ThePaginator.vue';
 import { useMovieStore } from '../stores/movieStore'
@@ -8,17 +7,14 @@ export default {
       ThePaginator,
       MovieCard2,
     },
-    setup() {
-        const movieStore = useMovieStore();
-        onMounted(() => {
-            movieStore.getMovies(movieStore.movieTitle);
-        });
-        const handleShowMovieById = (id: string) => {
-
-            movieStore.getMovieById(id);
-        };
-        return { movieStore, handleShowMovieById };
+    data() {
+      return {
+        movieStore: useMovieStore()
+      }
     },
+    mounted() {
+      this.movieStore.getMovies(this.movieStore.movieTitle)
+    }
 }
 </script>
 

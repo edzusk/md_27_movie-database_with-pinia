@@ -1,7 +1,7 @@
 <script  lang="ts">
 import { RouterView } from 'vue-router'
 import { useMovieStore } from './stores/movieStore'
-  import { onMounted, } from 'vue';
+  import { onMounted } from 'vue';
 
 import SearchBar from './components/SearchBar.vue';
 export default {

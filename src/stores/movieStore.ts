@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios, { isAxiosError } from 'axios'
+import axios from 'axios'
 
 type Movie = {
   Title: string
@@ -102,7 +102,7 @@ export const useMovieStore = defineStore('movies', {
 
     previousPage() {
       if (this.currentPage > 1) {
-        this.currentPage--
+        this.currentPage-=1
         this.getMovies(this.movieTitle)
       }
     }
