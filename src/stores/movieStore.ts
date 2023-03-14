@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
+const api_key = import.meta.env.VITE_API_KEY  // replace this with valid API key
+
 type Movie = {
   Title: string
   Year: string
@@ -71,19 +73,19 @@ export const useMovieStore = defineStore('movies', {
       this.movieTitle = movieTitle
       this.isLoading = true
       const { data } = await axios.get<SearchResponse>(
-        `http://www.omdbapi.com/?s=${movieTitle}&page=${this.currentPage}&apikey=2fcb237`
-      )
+        `http://www.omdbapi.com/?s=${movieTitle}&page=${this.currentPage}&apikey=${api_key}`
+      )                                                                        
       if (!data) {
-        this.isError = true
-        return
+        this.isError = true                    
+        return                  
       }
-      this.response = data,
+      this.response = data,                         
       this.totalPages =  Math.ceil(this.response.totalResults / 10)
       this.isLoading  = false
     },
 
     getMovieById(id: string) {
-      axios.get<MovieById>(`http://www.omdbapi.com/?i=${id}&apikey=2fcb237`).then(({ data }) => {
+      axios.get<MovieById>(`http://www.omdbapi.com/?i=${id}&apikey=${api_key}`).then(({ data }) => {
         this.movieById = data
       })
     },
