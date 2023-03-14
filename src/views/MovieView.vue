@@ -13,13 +13,14 @@ export default {
       }
     },
     mounted() {
-      this.movieStore.getMovies(this.movieStore.movieTitle)
+      this.movieStore.getMovies(this.movieStore.movieSearchFor)
     }
 }
 </script>
 
 <template>
-  <main class="content">
+
+  <main v-if="!movieStore.isLoading" class="content">
     <div class="container">
       <div class="row">
         <MovieCard2 class="col-4"  v-for="movie in movieStore.movies"
@@ -33,7 +34,7 @@ export default {
     </div>
   </main>
   <footer class="footer">
-    <ThePaginator :onPrev="movieStore.previousPage" :onNext="movieStore.nextPage" :lastPage="movieStore.totalPages" :currentPage="movieStore.currentPage"/>
+    <ThePaginator v-if="!movieStore.isLoading" :onPrev="movieStore.previousPage" :onNext="movieStore.nextPage" :lastPage="movieStore.totalPages" :currentPage="movieStore.currentPage"/>
   </footer>
 </template>
 

@@ -1,26 +1,31 @@
 <script  lang="ts">
 import { RouterView } from 'vue-router'
 import { useMovieStore } from './stores/movieStore'
-  import { onMounted } from 'vue';
 
 import SearchBar from './components/SearchBar.vue';
+import TheError from './components/TheError.vue';
+import TheLoading from './components/TheLoading.vue';
+
 export default {
     components: {
       SearchBar,
       RouterView,
+      TheError,
+      TheLoading,
     },
 
-    setup() {
-        const {getMovies, resetPage, movieTitle} = useMovieStore();
-        onMounted(() => {
-            getMovies(movieTitle);
-        });
-        const handleSearch = (searchValue: string) => {
-          resetPage();
-          getMovies(searchValue);
-        }
-        return { handleSearch, resetPage, movieTitle};
+    data() {
+      return {
+        movieStore: useMovieStore()
+      }
     },
+    methods: {
+      handleSearch(searchValue: string) {
+          this.movieStore.resetPage();
+          this.movieStore.getMovies(searchValue);
+        }
+    }
+    
 }
 
 
@@ -32,7 +37,9 @@ export default {
       <SearchBar :onSubmit="handleSearch"/>
     </div>
   </header>
-  <RouterView />
+  <TheLoading v-if="movieStore.isLoading"/>
+  <TheError v-if="movieStore.isError" :errorMesage="movieStore.errorMessage" />
+  <RouterView/>
 </template>
 
 <style scoped>

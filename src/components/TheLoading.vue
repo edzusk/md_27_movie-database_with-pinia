@@ -1,9 +1,7 @@
-<script setup lang="ts">
-defineProps<{
-  isLoading: boolean,
-}>()
-</script>
+
 
 <template>
-    <h1 v-if="isLoading">Loading...</h1>
+  <div class="container align-content-center">
+    <h1>Loading...</h1>
+  </div>
 </template>

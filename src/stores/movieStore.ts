@@ -14,7 +14,7 @@ type Movie = {
 type SearchResponse = {
   Search: Movie[]
   totalResults: number
-  Response: boolean
+  Response: string
   Error: string
 }
 
@@ -44,50 +44,67 @@ type MovieById = {
   Type: string
   DVD: string
   BoxOffice: string
-  Production: string
+  Production: string,
+  Response: string,
+  Error: string
 }
 
 export const useMovieStore = defineStore('movies', {
   state: () => ({
     response: {} as SearchResponse,
+    movies: [] as Movie[],
     movieById: {} as MovieById,
     currentPage: 1,
-    movieTitle: 'Coding 101',
+    movieSearchFor: 'Coding 101',
     totalPages: 1,
     isError: false,
+    errorMessage: '',
     isLoading: false,
   }),
 
-  getters: {
-    movies(): Movie[] | undefined {
-      return this.response.Search
-    },
-
-    resultsFound(): number | undefined {
-      return this.response.totalResults
-    }
-  },
-
   actions: {
-    async getMovies(movieTitle: string) {
-      this.movieTitle = movieTitle
+     getMovies(movieSearchFor: string) {
       this.isLoading = true
-      const { data } = await axios.get<SearchResponse>(
-        `http://www.omdbapi.com/?s=${movieTitle}&page=${this.currentPage}&apikey=${api_key}`
-      )                                                                        
-      if (!data) {
-        this.isError = true                    
-        return                  
+      this.movieSearchFor = movieSearchFor
+      try {      axios.get<SearchResponse>(
+        `http://www.omdbapi.com/?s=${movieSearchFor}&page=${this.currentPage}&apikey=${api_key}`
+      ).then(({ data }) => {
+
+        if (data.Response === "False") {
+          this.isError = true
+          this.errorMessage = data.Error
+          this.isLoading = false                                 
+        }
+
+        if (data.Response === "True"){
+          console.log('we have response')
+          this.isLoading  = false
+          this.totalPages =  Math.ceil(data.totalResults / 10),
+          console.log(this.totalPages)
+          this.movies = data.Search                     
+        }
+      })    
+        
+      } catch (error) {
+        this.isError = true
+        this.errorMessage = 'something went wrong'
       }
-      this.response = data,                         
-      this.totalPages =  Math.ceil(this.response.totalResults / 10)
-      this.isLoading  = false
+                                                                  
     },
 
-    getMovieById(id: string) {
-      axios.get<MovieById>(`http://www.omdbapi.com/?i=${id}&apikey=${api_key}`).then(({ data }) => {
-        this.movieById = data
-      })
+    async getMovieById(id: string) {
+      this.isLoading = true
+      const { data } = await axios.get<MovieById>(`http://www.omdbapi.com/?i=${id}&apikey=${api_key}`)
+      if (data.Response === "False") {
+        this.isError = true
+        this.errorMessage = data.Error
+        this.isLoading = false                                 
+      }
+
+      if (data.Response === "True"){
+        this.movieById = data                      
+        this.isLoading  = false
+      }
     },
 
     resetPage() {
@@ -98,14 +115,14 @@ export const useMovieStore = defineStore('movies', {
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage += 1
-        this.getMovies(this.movieTitle)
+        this.getMovies(this.movieSearchFor)
       }
     },
 
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage-=1
-        this.getMovies(this.movieTitle)
+        this.getMovies(this.movieSearchFor)
       }
     }
   }
